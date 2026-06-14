@@ -3,9 +3,9 @@
  *
  * Key fixes vs v1.2:
  *  - No ES imports (IIFE only)
- *  - Context injection via window.SillyTavern.getContext().setExtensionPrompt
- *    called from the jQuery document event 'generate_before_any_action'
- *    which is the actual DOM event ST fires reliably
+ *  - Context injection via window.setExtensionPrompt called from
+ *    eventSource.on(GENERATE_BEFORE_COMBINE_PROMPTS) — the correct ST hook
+ *    (the old jQuery 'generate_before_any_action' event does not exist in ST)
  *  - Settings stored in window.extension_settings[EXT_NAME] directly
  *    (the global ST exposes for extensions)
  *  - Character data stored in chatMetadata via getContext()
@@ -18,7 +18,7 @@
 
   const EXT_NAME    = 'char-card-tracker';
   const INJECT_KEY  = 'cct_char_context';
-  const INJECT_POS  = 1;   // 1 = after system prompt in ST's enum
+  const INJECT_POS  = 0;   // 0 = IN_PROMPT (before system prompt); resolved at runtime below
   const INJECT_DEPTH = 0;
 
   const DEFAULT_SETTINGS = {
@@ -112,15 +112,18 @@
   function doInject() {
     const text = buildInjection();
 
+    // Resolve injection position from ST's enum at call time (safer than a hardcoded int)
+    const pos = window.extension_prompt_types?.IN_PROMPT ?? 0;
+
     // Primary path: ST's setExtensionPrompt global (works in ST >= 1.11)
     if (typeof window.setExtensionPrompt === 'function') {
-      window.setExtensionPrompt(INJECT_KEY, text, INJECT_POS, INJECT_DEPTH);
+      window.setExtensionPrompt(INJECT_KEY, text, pos, INJECT_DEPTH);
       return;
     }
     // Secondary path: via context
     const c = ctx();
     if (typeof c?.setExtensionPrompt === 'function') {
-      c.setExtensionPrompt(INJECT_KEY, text, INJECT_POS, INJECT_DEPTH);
+      c.setExtensionPrompt(INJECT_KEY, text, pos, INJECT_DEPTH);
       return;
     }
     console.warn(`[${EXT_NAME}] setExtensionPrompt not found — injection skipped`);
@@ -461,21 +464,26 @@
     renderPanel();
     updatePreview();
 
-    // ── Injection hook via jQuery document event (most reliable ST method) ──
-    // ST fires 'generate_before_any_action' on $(document) before every send.
-    $(document).on('generate_before_any_action', () => {
-      doInject();
-    });
-
-    // Also try the eventSource path as a belt-and-suspenders backup
+    // ── Injection hook via ST's eventSource (correct method) ──
+    // GENERATE_BEFORE_COMBINE_PROMPTS fires reliably before every send.
     try {
-      const es = ctx()?.eventSource;
-      const et = ctx()?.eventTypes;
+      const es = ctx()?.eventSource ?? window.eventSource;
+      const et = ctx()?.eventTypes  ?? window.event_types;
       if (es && et) {
-        const ev = et.GENERATE_BEFORE_ANY_ACTION || et.GENERATE_BEFORE_COMBINE_PROMPTS;
-        if (ev) es.on(ev, doInject);
+        const ev = et.GENERATE_BEFORE_COMBINE_PROMPTS;
+        if (ev) {
+          es.on(ev, doInject);
+          console.log(`[${EXT_NAME}] hooked into ${ev}`);
+        } else {
+          console.warn(`[${EXT_NAME}] GENERATE_BEFORE_COMBINE_PROMPTS not in eventTypes — trying fallback`);
+        }
       }
-    } catch(e) { /* ignore */ }
+    } catch(e) { console.warn(`[${EXT_NAME}] eventSource hook failed:`, e); }
+
+    // Fallback: hook the send button directly if eventSource binding failed
+    $(document).on('click', '#send_but, #send_textarea', function() {
+      setTimeout(doInject, 0); // yield so ST's generate pipeline has started
+    });
 
     // Reload on chat change
     $(document).on('chatLoaded chat_changed', () => {
