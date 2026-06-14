@@ -1,0 +1,11 @@
+{
+  "display_name": "Character Card Tracker",
+  "loading_order": 101,
+  "requires": [],
+  "optional": [],
+  "js": "index.js",
+  "css": "style.css",
+  "author": "CharCardPlugin",
+  "version": "1.0.0",
+  "homePage": "https://github.com/your-repo/char-card-plugin"
+}
