@@ -1,0 +1,531 @@
+/* ============================================================
+   Character Card Tracker – style.css
+   ============================================================ */
+
+/* ── Panel Container ──────────────────────────────────────── */
+#cct-panel {
+  position: fixed;
+  top: 60px;
+  right: 10px;
+  width: 320px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cct-accent) transparent;
+}
+
+#cct-panel.cct-left {
+  right: auto;
+  left: 10px;
+}
+
+#cct-panel::-webkit-scrollbar { width: 4px; }
+#cct-panel::-webkit-scrollbar-thumb { background: var(--cct-accent); border-radius: 2px; }
+
+/* ── Theme Variables ──────────────────────────────────────── */
+.cct-theme-dark {
+  --cct-bg: #1a1a2e;
+  --cct-surface: #16213e;
+  --cct-surface2: #0f3460;
+  --cct-border: #533483;
+  --cct-accent: #e94560;
+  --cct-accent2: #a855f7;
+  --cct-text: #e0e0e0;
+  --cct-text2: #9090a0;
+  --cct-text-on-accent: #fff;
+  --cct-header-bg: linear-gradient(135deg, #16213e, #0f3460);
+  --cct-card-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  --cct-radius: 10px;
+  --cct-tag-bg: rgba(232,69,96,0.18);
+  --cct-tag-text: #e94560;
+  --cct-like-bg: rgba(34,197,94,0.18);
+  --cct-like-text: #22c55e;
+  --cct-hate-bg: rgba(239,68,68,0.18);
+  --cct-hate-text: #ef4444;
+}
+
+.cct-theme-fantasy {
+  --cct-bg: #1c1228;
+  --cct-surface: #241535;
+  --cct-surface2: #3a1f5c;
+  --cct-border: #7c3aed;
+  --cct-accent: #d97706;
+  --cct-accent2: #7c3aed;
+  --cct-text: #f5e6d3;
+  --cct-text2: #a89880;
+  --cct-text-on-accent: #fff;
+  --cct-header-bg: linear-gradient(135deg, #241535, #3a1f5c);
+  --cct-card-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  --cct-radius: 10px;
+  --cct-tag-bg: rgba(217,119,6,0.18);
+  --cct-tag-text: #d97706;
+  --cct-like-bg: rgba(34,197,94,0.18);
+  --cct-like-text: #86efac;
+  --cct-hate-bg: rgba(239,68,68,0.18);
+  --cct-hate-text: #fca5a5;
+}
+
+.cct-theme-light {
+  --cct-bg: #f0f4f8;
+  --cct-surface: #ffffff;
+  --cct-surface2: #e2e8f0;
+  --cct-border: #cbd5e1;
+  --cct-accent: #3b82f6;
+  --cct-accent2: #8b5cf6;
+  --cct-text: #1e293b;
+  --cct-text2: #64748b;
+  --cct-text-on-accent: #fff;
+  --cct-header-bg: linear-gradient(135deg, #dbeafe, #e0e7ff);
+  --cct-card-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  --cct-radius: 10px;
+  --cct-tag-bg: rgba(59,130,246,0.1);
+  --cct-tag-text: #1d4ed8;
+  --cct-like-bg: rgba(34,197,94,0.12);
+  --cct-like-text: #15803d;
+  --cct-hate-bg: rgba(239,68,68,0.1);
+  --cct-hate-text: #b91c1c;
+}
+
+.cct-theme-minimal {
+  --cct-bg: #0d0d0d;
+  --cct-surface: #141414;
+  --cct-surface2: #1e1e1e;
+  --cct-border: #2e2e2e;
+  --cct-accent: #ffffff;
+  --cct-accent2: #888888;
+  --cct-text: #e8e8e8;
+  --cct-text2: #666;
+  --cct-text-on-accent: #000;
+  --cct-header-bg: #141414;
+  --cct-card-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  --cct-radius: 6px;
+  --cct-tag-bg: rgba(255,255,255,0.08);
+  --cct-tag-text: #ccc;
+  --cct-like-bg: rgba(255,255,255,0.08);
+  --cct-like-text: #aaa;
+  --cct-hate-bg: rgba(255,255,255,0.08);
+  --cct-hate-text: #aaa;
+}
+
+/* ── Character Card ───────────────────────────────────────── */
+.cct-card {
+  background: var(--cct-surface);
+  border: 1px solid var(--cct-border);
+  border-radius: var(--cct-radius);
+  box-shadow: var(--cct-card-shadow);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.cct-card:hover {
+  box-shadow: var(--cct-card-shadow), 0 0 0 1px var(--cct-accent);
+}
+
+/* ── Card Header ──────────────────────────────────────────── */
+.cct-card-header {
+  background: var(--cct-header-bg);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid var(--cct-border);
+}
+.cct-char-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--cct-accent);
+  flex-shrink: 0;
+}
+.cct-avatar-placeholder {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--cct-surface2);
+  border: 2px solid var(--cct-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  color: var(--cct-text);
+}
+.cct-char-name-area {
+  flex: 1;
+  min-width: 0;
+}
+.cct-char-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cct-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.cct-char-subtitle {
+  font-size: 11px;
+  color: var(--cct-text2);
+  margin: 2px 0 0;
+}
+.cct-collapse-btn {
+  background: none;
+  border: none;
+  color: var(--cct-text2);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+.cct-collapse-btn:hover { color: var(--cct-accent); }
+
+/* ── Card Body ────────────────────────────────────────────── */
+.cct-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cct-card-body.cct-collapsed { display: none; }
+
+/* ── Section Labels ───────────────────────────────────────── */
+.cct-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cct-accent);
+  margin: 0 0 5px;
+}
+
+/* ── Stats Row ────────────────────────────────────────────── */
+.cct-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.cct-stat-item {
+  background: var(--cct-surface2);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.cct-stat-label {
+  font-size: 10px;
+  color: var(--cct-text2);
+  margin: 0 0 2px;
+}
+.cct-stat-value {
+  font-size: 13px;
+  color: var(--cct-text);
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 18px;
+  border-radius: 3px;
+  padding: 1px 3px;
+  transition: background 0.15s;
+}
+.cct-stat-value:hover {
+  background: rgba(255,255,255,0.06);
+}
+.cct-stat-value[contenteditable="true"] {
+  outline: 1px solid var(--cct-accent);
+  background: var(--cct-bg);
+}
+
+/* ── Tags (likes/hates/wearing) ───────────────────────────── */
+.cct-tags-section { }
+.cct-tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 22px;
+}
+.cct-tag {
+  background: var(--cct-tag-bg);
+  color: var(--cct-tag-text);
+  border: 1px solid var(--cct-tag-text);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cct-tag.like {
+  background: var(--cct-like-bg);
+  color: var(--cct-like-text);
+  border-color: var(--cct-like-text);
+}
+.cct-tag.hate {
+  background: var(--cct-hate-bg);
+  color: var(--cct-hate-text);
+  border-color: var(--cct-hate-text);
+}
+.cct-tag.wear {
+  background: var(--cct-tag-bg);
+  color: var(--cct-tag-text);
+  border-color: var(--cct-border);
+}
+.cct-tag-del {
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 13px;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+}
+.cct-tag-del:hover { opacity: 1; }
+
+.cct-tag-add-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+}
+.cct-tag-input {
+  flex: 1;
+  background: var(--cct-surface2);
+  border: 1px solid var(--cct-border);
+  border-radius: 6px;
+  color: var(--cct-text);
+  font-size: 12px;
+  padding: 4px 8px;
+  outline: none;
+  min-width: 0;
+}
+.cct-tag-input:focus { border-color: var(--cct-accent); }
+.cct-tag-add-btn {
+  background: var(--cct-accent);
+  color: var(--cct-text-on-accent);
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cct-tag-add-btn:hover { opacity: 0.85; }
+
+/* ── Context Inject Button ────────────────────────────────── */
+.cct-inject-info {
+  font-size: 10px;
+  color: var(--cct-text2);
+  text-align: center;
+  margin-top: -4px;
+}
+
+/* ── Panel Header / Controls ──────────────────────────────── */
+#cct-panel-header {
+  background: var(--cct-surface);
+  border: 1px solid var(--cct-border);
+  border-radius: var(--cct-radius);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--cct-card-shadow);
+}
+#cct-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cct-accent);
+  letter-spacing: 0.04em;
+}
+.cct-header-btns {
+  display: flex;
+  gap: 6px;
+}
+.cct-icon-btn {
+  background: var(--cct-surface2);
+  border: 1px solid var(--cct-border);
+  color: var(--cct-text);
+  border-radius: 6px;
+  font-size: 13px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cct-icon-btn:hover {
+  border-color: var(--cct-accent);
+  color: var(--cct-accent);
+}
+
+/* ── Add Character Form ───────────────────────────────────── */
+#cct-add-form {
+  background: var(--cct-surface);
+  border: 1px solid var(--cct-border);
+  border-radius: var(--cct-radius);
+  padding: 12px 14px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--cct-card-shadow);
+}
+#cct-add-form.cct-visible { display: flex; }
+.cct-form-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.cct-form-label {
+  font-size: 11px;
+  color: var(--cct-text2);
+  width: 70px;
+  flex-shrink: 0;
+}
+.cct-form-input {
+  flex: 1;
+  background: var(--cct-surface2);
+  border: 1px solid var(--cct-border);
+  border-radius: 6px;
+  color: var(--cct-text);
+  font-size: 12px;
+  padding: 5px 9px;
+  outline: none;
+}
+.cct-form-input:focus { border-color: var(--cct-accent); }
+.cct-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.cct-btn {
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--cct-border);
+  background: var(--cct-surface2);
+  color: var(--cct-text);
+}
+.cct-btn.primary {
+  background: var(--cct-accent);
+  border-color: var(--cct-accent);
+  color: var(--cct-text-on-accent);
+  font-weight: 600;
+}
+.cct-btn:hover { opacity: 0.85; }
+
+/* ── Settings Panel ───────────────────────────────────────── */
+#cct-settings-panel {
+  background: var(--cct-surface);
+  border: 1px solid var(--cct-border);
+  border-radius: var(--cct-radius);
+  padding: 12px 14px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--cct-card-shadow);
+  font-size: 12px;
+  color: var(--cct-text);
+}
+#cct-settings-panel.cct-visible { display: flex; }
+.cct-settings-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cct-accent);
+  margin: 0 0 4px;
+}
+.cct-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.cct-settings-row label { color: var(--cct-text2); }
+.cct-settings-row select,
+.cct-settings-row input[type="text"] {
+  background: var(--cct-surface2);
+  border: 1px solid var(--cct-border);
+  border-radius: 6px;
+  color: var(--cct-text);
+  font-size: 12px;
+  padding: 4px 8px;
+  outline: none;
+}
+.cct-settings-row select:focus,
+.cct-settings-row input[type="text"]:focus { border-color: var(--cct-accent); }
+.cct-toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.cct-toggle input { opacity: 0; width: 0; height: 0; }
+.cct-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--cct-surface2);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid var(--cct-border);
+}
+.cct-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--cct-text2);
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s, background 0.2s;
+}
+.cct-toggle input:checked + .cct-toggle-slider { background: var(--cct-accent); border-color: var(--cct-accent); }
+.cct-toggle input:checked + .cct-toggle-slider::before {
+  transform: translateX(16px);
+  background: #fff;
+}
+
+/* ── Context Preview ──────────────────────────────────────── */
+.cct-context-preview {
+  background: var(--cct-surface2);
+  border: 1px solid var(--cct-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--cct-text2);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 140px;
+  overflow-y: auto;
+  font-family: monospace;
+  display: none;
+}
+.cct-context-preview.cct-visible { display: block; }
+
+/* ── Delete char button ───────────────────────────────────── */
+.cct-delete-char {
+  background: none;
+  border: none;
+  color: var(--cct-hate-text);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0.6;
+}
+.cct-delete-char:hover { opacity: 1; background: var(--cct-hate-bg); }
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+.cct-card-body::-webkit-scrollbar { width: 3px; }
+.cct-card-body::-webkit-scrollbar-thumb { background: var(--cct-border); border-radius: 2px; }
+
+/* ── SillyTavern extension settings area ─────────────────── */
+#cct-st-settings {
+  padding: 10px;
+  color: var(--cct-text, #eee);
+}
