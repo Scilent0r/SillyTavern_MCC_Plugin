@@ -3,25 +3,15 @@
    ============================================================ */
 
 /* ── Panel Container ──────────────────────────────────────── */
+/* Position/size/z-index set inline by JS to survive ST stylesheet resets */
 #cct-panel {
-  position: fixed;
-  top: 60px;
-  right: 10px;
-  width: 320px;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 9000;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: var(--cct-accent) transparent;
-}
-
-#cct-panel.cct-left {
-  right: auto;
-  left: 10px;
+  scrollbar-color: var(--cct-accent, #e94560) transparent;
 }
 
 #cct-panel::-webkit-scrollbar { width: 4px; }
