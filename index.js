@@ -80,6 +80,54 @@
     catch { characters = {}; }
   }
 
+  // ── Import / Export ───────────────────────────────────────────────────────
+
+  function exportCharacters() {
+    const payload = {
+      version: 1,
+      exported: new Date().toISOString(),
+      characters,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const date = new Date().toISOString().slice(0, 10);
+    a.href     = url;
+    a.download = `char-cards-${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importCharacters(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        const incoming = parsed.version === 1 ? parsed.characters : parsed;
+        if (typeof incoming !== 'object' || Array.isArray(incoming))
+          throw new Error('Unexpected format');
+        const count = Object.keys(incoming).length;
+        if (!count) { alert('No characters found in file.'); return; }
+        const mode = Object.keys(characters).length
+          ? confirm(`Merge with existing characters?\nOK = merge (keep existing + add new)\nCancel = replace all`)
+          : false; // no existing chars → always replace
+        if (mode) {
+          // Merge: incoming wins on conflict
+          Object.assign(characters, incoming);
+        } else {
+          characters = incoming;
+        }
+        saveCharacters();
+        renderPanel();
+        updatePreview();
+        alert(`Imported ${count} character(s).`);
+      } catch (err) {
+        alert('Failed to import: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
   // ── Context injection ─────────────────────────────────────────────────────
 
   function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
@@ -403,6 +451,11 @@
             <option value="right" ${settings.position==='right'?'selected':''}>Right</option>
             <option value="left" ${settings.position==='left'?'selected':''}>Left</option>
           </select></div>
+        <div class="cct-settings-row" style="gap:6px">
+          <button class="cct-btn" id="cct-export-chars" style="flex:1">📤 Export</button>
+          <button class="cct-btn" id="cct-import-chars" style="flex:1">📥 Import</button>
+          <input type="file" id="cct-import-file" accept=".json" style="display:none">
+        </div>
         <div class="cct-settings-row">
           <button class="cct-btn" id="cct-clear-chars" style="width:100%;color:#ef4444">🗑 Clear all characters</button>
         </div>
@@ -448,6 +501,12 @@
       if (settings.position==='left'){panelEl.style.right='auto';panelEl.style.left='10px';}
       else{panelEl.style.left='auto';panelEl.style.right='10px';}
       saveSettings();
+    });
+    $('cct-export-chars').addEventListener('click', exportCharacters);
+    $('cct-import-chars').addEventListener('click', () => $('cct-import-file').click());
+    $('cct-import-file').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) { importCharacters(file); e.target.value = ''; }
     });
     $('cct-clear-chars').addEventListener('click', () => {
       if (!confirm('Clear all character cards for this chat?')) return;
