@@ -1,4 +1,4 @@
-# Character Card Tracker – SillyTavern Extension
+# MCC (Manual Character Card) Tracker – SillyTavern Extension
 
 A lightweight extension for **group chats** that lets you manually maintain
 per-character cards (stats, outfit, likes/hates) and automatically injects
